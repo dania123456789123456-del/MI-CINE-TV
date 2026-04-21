@@ -2,7 +2,7 @@
 <html lang="es">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=0.85, maximum-scale=0.85, user-scalable=no, viewport-fit=cover">
 <!-- Convierte automáticamente http:// → https:// para evitar mixed-content blocking en Chrome/WebView -->
 <meta http-equiv="Content-Security-Policy" content="upgrade-insecure-requests">
 <!-- No enviar Referer al servidor de storage (evita bloqueos por hotlink) -->
@@ -80,16 +80,15 @@
 <style>
 
 /* ═══════════════════════════════════════════════════════
-   🎛  ZOOM PARA TV — AJUSTA ESTE ÚNICO NÚMERO
-   ─────────────────────────────────────────────────────
-   1.0 = tamaño normal
-   1.2 = 20% más grande
-   1.5 = 50% más grande  ← punto de partida para TV 65"
-   1.8 = 80% más grande
-   Sube o baja de a 0.1 hasta que se vea bien en tu TV.
+   🎛  ZOOM PARA CELULAR/WEBVIEW — AJUSTA ESTE ÚNICO NÚMERO
+   1.0=normal | 0.85=15% más chico ← punto de partida
 ═══════════════════════════════════════════════════════ */
-:root { --zoom-global: 1.5; }
-body { zoom: var(--zoom-global); }
+:root { --zoom-global: 0.85; }
+body {
+  zoom: var(--zoom-global);
+  height: calc(100vh / var(--zoom-global));
+  min-height: calc(100vh / var(--zoom-global));
+}
 
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 
@@ -108,9 +107,11 @@ body { zoom: var(--zoom-global); }
   --mute: #7474a0;
   --sw: 230px;
   --rad: 14px;
+  --trailer-offset: 32px; /* 🎛 SUBE O BAJA EL TRAILER: cambia este número (px). Más grande = más abajo, más chico = más arriba */
 }
 
-html,body { height:100%; overflow:hidden; font-family:'DM Sans',sans-serif; background:var(--ink); color:var(--txt); }
+html { height:100%; overflow:hidden; }
+body { overflow:hidden; font-family:'DM Sans',sans-serif; background:var(--ink); color:var(--txt); }
 
 /* ── LAYERS ── */
 .layer { position:fixed; inset:0; transition:opacity .35s ease, transform .35s ease; z-index:10; }
@@ -220,15 +221,15 @@ html,body { height:100%; overflow:hidden; font-family:'DM Sans',sans-serif; back
 .login-err { display:none; color:#f87171; font-size:12px; text-align:center; margin-top:10px; }
 
 /* ═══════════════ APP SHELL ═══════════════ */
-#L-app { display:flex; background:var(--ink); }
+#L-app { display:flex; background:var(--ink); height:calc(100vh / var(--zoom-global)); overflow:hidden; }
 
 /* SIDEBAR */
 .sidebar {
-  width:var(--sw); min-width:var(--sw); height:100vh;
+  width:var(--sw); min-width:var(--sw); height:calc(100vh / var(--zoom-global));
   background:rgba(13,12,30,0.98); backdrop-filter:blur(20px);
   border-right:1px solid var(--border);
   display:flex; flex-direction:column; padding:20px 0;
-  transition:transform .3s ease; z-index:100;
+  transition:transform .3s ease; z-index:100; overflow:hidden;
 }
 
 .s-logo { display:flex; align-items:center; gap:11px; padding:0 18px 26px; border-bottom:1px solid rgba(255,255,255,.05); margin-bottom:12px; }
@@ -250,7 +251,7 @@ html,body { height:100%; overflow:hidden; font-family:'DM Sans',sans-serif; back
 .s-bottom { margin-top:auto; padding:0 8px; border-top:1px solid rgba(255,255,255,.05); padding-top:12px; }
 
 /* MAIN */
-.main { flex:1; height:100vh; overflow-y:auto; overflow-x:hidden; scroll-behavior:smooth; }
+.main { flex:1; height:calc(100vh / var(--zoom-global)); overflow-y:auto; overflow-x:hidden; scroll-behavior:smooth; display:flex; flex-direction:column; }
 .main::-webkit-scrollbar { width:5px; }
 .main::-webkit-scrollbar-thumb { background:rgba(138,92,246,.3); border-radius:3px; }
 
@@ -273,19 +274,19 @@ html,body { height:100%; overflow:hidden; font-family:'DM Sans',sans-serif; back
 .search-wrap input::placeholder { color:var(--mute); }
 
 /* HERO */
-.hero { position:relative; height:clamp(200px,34vw,360px); overflow:hidden; }
-.hero-bg { position:absolute; inset:0; background-size:cover; background-position:center; transition:opacity .7s; }
+.hero { position:relative; height:clamp(220px,32vw,340px); overflow:hidden; } .hero::after { content:""; position:absolute; bottom:0; left:0; right:0; height:3px; background:var(--ink); z-index:3; }
+.hero-bg { position:absolute; inset:0; background-size:cover; background-position:center 40%; transition:opacity .7s; }
 .hero-grad {
   position:absolute; inset:0;
-  background: linear-gradient(to right, rgba(5,4,15,.96) 0%,rgba(5,4,15,.75) 38%,rgba(5,4,15,.1) 70%,transparent 100%),
-              linear-gradient(to top, rgba(5,4,15,1) 0%, rgba(5,4,15,.4) 25%, transparent 55%);
+  background: linear-gradient(to right, rgba(5,4,15,.97) 0%,rgba(5,4,15,.78) 40%,rgba(5,4,15,.08) 72%,transparent 100%),
+              linear-gradient(to top, rgba(5,4,15,1) 0%, rgba(5,4,15,.55) 18%, transparent 42%);
 }
-.hero-body { position:relative; z-index:1; padding:0 18px 22px; height:100%; display:flex; flex-direction:column; justify-content:flex-end; max-width:62%; }
+.hero-body { position:relative; z-index:1; padding:0 18px 18px; height:100%; display:flex; flex-direction:column; justify-content:flex-end; max-width:62%; }
 .hero-tag { display:inline-flex; align-items:center; gap:5px; background:rgba(138,92,246,.22); border:1px solid rgba(138,92,246,.4); border-radius:20px; padding:3px 12px; font-size:11px; font-weight:700; color:var(--vl); margin-bottom:10px; font-family:'Outfit',sans-serif; letter-spacing:.5px; width:fit-content; }
 .hero-ttl { font-family:'Outfit',sans-serif; font-size:clamp(20px,3.2vw,40px); font-weight:900; line-height:1.1; margin-bottom:10px; text-shadow:0 2px 24px rgba(0,0,0,.5); }
 .hero-meta { display:flex; align-items:center; gap:10px; font-size:12px; color:var(--mute); margin-bottom:10px; flex-wrap:wrap; }
 .hero-stars { color:var(--gold); font-weight:700; }
-.hero-desc { font-size:13px; color:#c0b8e8; line-height:1.65; margin-bottom:18px; display:-webkit-box; -webkit-line-clamp:3; -webkit-box-orient:vertical; overflow:hidden; }
+.hero-desc { font-size:13px; color:#c0b8e8; line-height:1.65; margin-bottom:18px; display:-webkit-box; -webkit-line-clamp:4; -webkit-box-orient:vertical; overflow:hidden; }
 .hero-btns { display:flex; gap:10px; flex-wrap:wrap; }
 
 .btn-play {
@@ -306,7 +307,8 @@ html,body { height:100%; overflow:hidden; font-family:'DM Sans',sans-serif; back
 .btn-info:hover { background:rgba(255,255,255,.16); }
 
 /* SECTIONS */
-.c-section { padding:22px 20px; }
+.c-section { padding:10px 20px 18px; }
+.hero + .c-section { margin-top:-4px; position:relative; z-index:1; }
 .c-hdr { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px; }
 .c-hdr-lft { display:flex; align-items:center; gap:10px; }
 .c-hdr-title { font-family:'Outfit',sans-serif; font-size:17px; font-weight:800; }
@@ -315,11 +317,11 @@ html,body { height:100%; overflow:hidden; font-family:'DM Sans',sans-serif; back
 /* POSTER GRID */
 .grid {
   display:grid;
-  grid-template-columns:repeat(auto-fill,minmax(105px,1fr));
-  gap:10px;
+  grid-template-columns:repeat(auto-fill,minmax(130px,1fr));
+  gap:13px;
 }
-@media(min-width:600px){ .grid { grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); } }
-@media(min-width:1100px){ .grid { grid-template-columns:repeat(auto-fill,minmax(135px,1fr)); } }
+@media(min-width:600px){ .grid { grid-template-columns:repeat(auto-fill,minmax(150px,1fr)); } }
+@media(min-width:1100px){ .grid { grid-template-columns:repeat(auto-fill,minmax(170px,1fr)); } }
 
 .pcard {
   border-radius:12px; overflow:hidden; cursor:pointer;
@@ -400,7 +402,7 @@ html,body { height:100%; overflow:hidden; font-family:'DM Sans',sans-serif; back
 .det-main-grid {
   position:relative; z-index:2;
   display:grid; grid-template-columns:1fr 400px; gap:36px;
-  padding:18px 36px 20px; min-height:auto; align-items:start;
+  padding:14px 36px 0; min-height:auto; align-items:start;
   max-width:1280px; margin:0 auto;
 }
 
@@ -419,8 +421,11 @@ html,body { height:100%; overflow:hidden; font-family:'DM Sans',sans-serif; back
 .det-dircast { margin-bottom:14px; font-size:12px; color:#a09ac0; line-height:1.75; }
 .det-dircast b { color:var(--vl); font-weight:700; margin-right:4px; }
 
-.det-syn { font-size:13.5px; line-height:1.72; color:#ccc8ee; margin-bottom:12px; display:-webkit-box; -webkit-line-clamp:5; -webkit-box-orient:vertical; overflow:hidden; }
-.det-acts { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+.det-syn { font-size:13.5px; line-height:1.72; color:#ccc8ee; margin-bottom:6px; display:-webkit-box; -webkit-line-clamp:4; -webkit-box-orient:vertical; overflow:hidden; transition:all .3s; }
+.det-syn.expanded { -webkit-line-clamp:unset; display:block; }
+.det-syn-more { background:none; border:none; color:var(--vl); font-size:12px; font-weight:700; font-family:'Outfit',sans-serif; cursor:pointer; padding:0; margin-bottom:10px; opacity:.85; }
+.det-syn-more:hover { opacity:1; }
+.det-acts { display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:4px; }
 
 .det-btn-play {
   display:flex; align-items:center; gap:8px;
@@ -441,13 +446,13 @@ html,body { height:100%; overflow:hidden; font-family:'DM Sans',sans-serif; back
 .det-btn-icon:hover { background:rgba(255,255,255,.16); }
 .det-btn-icon.fav-on { background:rgba(251,191,36,.12); border-color:rgba(251,191,36,.4); color:var(--gold); }
 
-.det-trailer-col { display:flex; align-items:center; justify-content:center; }
+.det-trailer-col { display:flex; align-items:flex-start; justify-content:center; padding-top:var(--trailer-offset); }
 .det-trailer-box {
   width:100%; aspect-ratio:16/9; border-radius:14px; overflow:hidden;
   background:#000; position:relative;
   box-shadow:0 24px 60px rgba(0,0,0,.8), 0 0 0 1px rgba(138,92,246,.22);
 }
-.det-trailer-vid { width:100%; height:100%; object-fit:contain; display:block; background:#000; }
+.det-trailer-vid { width:100%; height:100%; object-fit:fill; display:block; background:#000; }
 .det-trailer-ph {
   position:absolute; inset:0; display:flex; flex-direction:column;
   align-items:center; justify-content:center;
@@ -458,15 +463,14 @@ html,body { height:100%; overflow:hidden; font-family:'DM Sans',sans-serif; back
 
 .eps-section {
   position:relative; z-index:2;
-  padding:0 36px 28px; max-width:1280px; margin:0 auto;
-  border-top:1px solid rgba(255,255,255,.07);
+  padding:0 36px 16px; max-width:1280px; margin:0 auto;
 }
 .eps-ttl { font-family:'Outfit',sans-serif; font-size:17px; font-weight:800; margin-bottom:14px; padding-top:24px; }
 
 .det-reco-section { position:relative; z-index:2; padding:6px 36px 24px; max-width:1280px; margin:0 auto; }
 .det-reco-title { font-family:'Outfit',sans-serif; font-size:17px; font-weight:800; margin-bottom:16px; }
-.reco-scroll { display:flex; gap:12px; overflow-x:auto; padding-bottom:10px; scroll-snap-type:x mandatory; }
-.reco-scroll::-webkit-scrollbar { height:3px; }
+.reco-scroll { display:flex; gap:12px; overflow-x:auto; padding-bottom:4px; scroll-snap-type:x mandatory; scrollbar-width:none; }
+.reco-scroll::-webkit-scrollbar { height:0; display:none; }
 .reco-scroll::-webkit-scrollbar-thumb { background:rgba(138,92,246,.35); border-radius:2px; }
 .reco-card {
   flex-shrink:0; width:120px; border-radius:10px; overflow:hidden; cursor:pointer;
@@ -478,7 +482,7 @@ html,body { height:100%; overflow:hidden; font-family:'DM Sans',sans-serif; back
 .reco-card-rt { position:absolute; top:5px; right:5px; font-size:9px; font-weight:700; background:rgba(0,0,0,.75); backdrop-filter:blur(6px); color:var(--gold); padding:2px 6px; border-radius:5px; }
 
 /* EPISODES */
-.eps-section { border-top:1px solid rgba(255,255,255,.07); padding-top:22px; }
+.eps-section { padding-top:4px; }
 .eps-ttl { font-family:'Outfit',sans-serif; font-size:16px; font-weight:800; margin-bottom:14px; }
 
 .seas-row { display:flex; gap:7px; flex-wrap:wrap; margin-bottom:16px; }
@@ -489,8 +493,8 @@ html,body { height:100%; overflow:hidden; font-family:'DM Sans',sans-serif; back
 }
 .seas-btn.on { background:rgba(138,92,246,.22); border-color:rgba(138,92,246,.45); color:#fff; }
 
-.eps-scroll { display:flex; gap:11px; overflow-x:auto; padding-bottom:8px; scroll-snap-type:x mandatory; }
-.eps-scroll::-webkit-scrollbar { height:3px; }
+.eps-scroll { display:flex; gap:11px; overflow-x:auto; padding-bottom:4px; scroll-snap-type:x mandatory; scrollbar-width:none; }
+.eps-scroll::-webkit-scrollbar { height:0; display:none; }
 .eps-scroll::-webkit-scrollbar-thumb { background:rgba(138,92,246,.35); border-radius:2px; }
 
 .ep-card {
@@ -821,7 +825,7 @@ html,body { height:100%; overflow:hidden; font-family:'DM Sans',sans-serif; back
   .hero-body { max-width:100%; padding:0 16px 22px; }
   .c-section { padding:16px 14px; }
   .grid { grid-template-columns:repeat(auto-fill,minmax(105px,1fr)); gap:9px; }
-  .det-main-grid { grid-template-columns:1fr; padding:14px 16px 16px; gap:16px; min-height:unset; }
+  .det-main-grid { grid-template-columns:1fr; padding:48px 16px 22px; gap:20px; min-height:unset; }
   .det-info-col { max-width:100%; }
   .det-trailer-col { order:-1; }
   .det-reco-section { padding:18px 16px 28px; }
@@ -948,6 +952,9 @@ html,body { height:100%; overflow:hidden; font-family:'DM Sans',sans-serif; back
       <div class="s-item" id="nav-favorites" onclick="goTo('favorites')">
         <svg viewBox="0 0 24 24"><path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/></svg>Favoritos
       </div>
+      <div class="s-item" id="nav-history" onclick="goTo('history')">
+        <svg viewBox="0 0 24 24"><path d="M13 3a9 9 0 0 0-9 9H1l3.89 3.89.07.14L9 12H6c0-3.87 3.13-7 7-7s7 3.13 7 7-3.13 7-7 7c-1.93 0-3.68-.79-4.94-2.06l-1.42 1.42A8.954 8.954 0 0 0 13 21a9 9 0 0 0 0-18zm-1 5v5l4.28 2.54.72-1.21-3.5-2.08V8H12z"/></svg>Historial
+      </div>
     </div>
     <div class="s-bottom">
       <div class="s-item" onclick="doLogout()">
@@ -968,7 +975,7 @@ html,body { height:100%; overflow:hidden; font-family:'DM Sans',sans-serif; back
         <input type="text" id="searchInp" placeholder="Buscar película o serie..." oninput="doSearch(this.value)">
       </div>
     </div>
-    <div id="contentArea"></div>
+    <div id="contentArea" style="flex:1;min-height:calc(100vh - 56px)"></div>
   </div>
 </div>
 
@@ -1003,6 +1010,7 @@ html,body { height:100%; overflow:hidden; font-family:'DM Sans',sans-serif; back
         <div class="det-genres" id="detGenres"></div>
         <div class="det-dircast" id="detDirCast"></div>
         <div class="det-syn" id="detSyn">Cargando información…</div>
+        <button class="det-syn-more" id="detSynMore" onclick="toggleSyn()" style="display:none">▼ Leer más</button>
         <div class="det-acts" id="detActs"></div>
       </div>
       <div class="det-trailer-col">
@@ -1050,6 +1058,13 @@ html,body { height:100%; overflow:hidden; font-family:'DM Sans',sans-serif; back
       Volver
     </button>
     <div class="p-vid-title" id="pTitleTxt"></div>
+    <!-- Botones prev/next episodio (solo visibles en series) -->
+    <button id="epPrevBtn" onclick="playPrevEp()" title="Episodio anterior" style="display:none;background:rgba(255,255,255,.12);border:none;border-radius:8px;color:#fff;cursor:pointer;padding:6px 10px;font-family:Outfit,sans-serif;font-size:12px;font-weight:700;align-items:center;gap:5px;flex-shrink:0;">
+      <svg width="14" height="14" fill="white" viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg> Ant.
+    </button>
+    <button id="epNextBtn" onclick="playNextEp()" title="Siguiente episodio" style="display:none;background:rgba(138,92,246,.75);border:none;border-radius:8px;color:#fff;cursor:pointer;padding:6px 10px;font-family:Outfit,sans-serif;font-size:12px;font-weight:700;align-items:center;gap:5px;flex-shrink:0;">
+      Sig. <svg width="14" height="14" fill="white" viewBox="0 0 24 24"><path d="M6 18l8.5-6L6 6v12zm2.5-6 5.5 3.9V8.1L8.5 12zM16 6h2v12h-2z"/></svg>
+    </button>
   </div>
 
   <!-- Popups -->
@@ -1165,9 +1180,14 @@ const S = {
   ctrlTimer: null,
   cache: {},
   searching: false,
-  splitAudioMode: false,   // true cuando el audio viene de URL separada del JSON
-  splitAudioUrl: null,     // URL del audio externo activo
-  audioOffset: 0,          // segundos de adelanto/retraso manual del audio externo
+  splitAudioMode: false,
+  splitAudioUrl: null,
+  audioOffset: 0,
+  // ── Contexto del reproductor ──
+  prevItem: null,         // item que estaba en detalle antes de abrir el player
+  currentSeries: null,    // id de la serie activa (null si es película)
+  currentSIdx: 0,         // índice de temporada activa
+  currentEIdx: 0,         // índice de episodio activo
 };
 
 /* ═══════════════════════════════════════
@@ -1270,15 +1290,16 @@ function goTo(section){
   S.section = section;
   S.searching = false;
   document.getElementById('searchInp').value = '';
-  ['home','movies','series','favorites'].forEach(s=>{
+  ['home','movies','series','favorites','history'].forEach(s=>{
     $('nav-'+s)?.classList.toggle('on', s===section);
   });
-  const titles = {home:'Inicio', movies:'Películas', series:'Series', favorites:'Favoritos'};
+  const titles = {home:'Inicio', movies:'Películas', series:'Series', favorites:'Favoritos', history:'Historial'};
   $('topbarTitle').textContent = titles[section]||section;
   closeSidebar();
   if(section==='home') renderHome();
   else if(section==='movies') renderGrid('movies');
   else if(section==='series') renderGrid('series');
+  else if(section==='history') renderHistory();
   else renderFavorites();
 }
 
@@ -1315,7 +1336,7 @@ async function tmdbSeason(seriesId, seasonNum){
 async function renderHome(){
   const area = $('contentArea');
   const allItems = [...S.movies.map(m=>({...m,type:'movie'})), ...S.series.map(s=>({...s,type:'series'}))];
-  const feat = allItems.length ? allItems[Math.floor(Math.random()*Math.min(4,allItems.length))] : null;
+  const feat = allItems.length ? allItems[Math.floor(Math.random()*allItems.length)] : null;
   
   let heroHtml = '';
   if(feat){
@@ -1359,8 +1380,8 @@ async function renderHome(){
     <div class="grid" id="grid-hser"></div>
   </div>`;
 
-  renderPosters('grid-hmov', S.movies.slice(0,14), 'movie');
-  renderPosters('grid-hser', S.series.slice(0,10), 'series');
+  renderPosters('grid-hmov', S.movies, 'movie');
+  renderPosters('grid-hser', S.series, 'series');
 }
 
 /* ═══════════════════════════════════════
@@ -1432,6 +1453,8 @@ async function openDetail(id, type){
   // Reset estado inicial
   $('detTitle').textContent = item.title;
   $('detSyn').textContent   = item.description||'Cargando información…';
+  $('detSyn').classList.remove('expanded');
+  const synBtn=$('detSynMore'); if(synBtn){synBtn.style.display='none';synBtn.textContent='▼ Leer más';}
   $('detMeta').innerHTML    = '';
   $('detGenres').innerHTML  = '';
   $('detDirCast').innerHTML = '';
@@ -1466,7 +1489,7 @@ async function openDetail(id, type){
     } else {
       const dfr2=$('detTrailerFr'); if(dfr2){dfr2.src='';dfr2.style.display='none';}
       dtv.style.display='block';
-      dtv.src=item.trailer; dtv.muted=true; dtv.load(); dtv.play().catch(()=>{});
+      dtv.src=item.trailer; dtv.muted=true; dtv.loop=true; dtv.load(); dtv.play().catch(()=>{});
     }
   } else {
     const dfr3=$('detTrailerFr'); if(dfr3){dfr3.src='';dfr3.style.display='none';}
@@ -1495,6 +1518,8 @@ async function openDetail(id, type){
     }
     $('detTitle').textContent = td.title||td.name||item.title;
     $('detSyn').textContent   = item.description||td.overview||'Sin sinopsis disponible.';
+    // Mostrar botón "Leer más" si la sinopsis es larga
+    { const sb=$('detSynMore'); if(sb) sb.style.display='inline-block'; }
     $('detMeta').innerHTML    = `
       ${yr?`<span class="det-yr">${yr}</span>`:''}
       ${rt?`<span class="det-rt">${rt}</span>`:''}
@@ -1517,6 +1542,7 @@ async function openDetail(id, type){
     renderDetReco(td, type, id);
   } else {
     $('detSyn').textContent = item.description||'Sin sinopsis disponible.';
+    { const sb=$('detSynMore'); if(sb) sb.style.display='inline-block'; }
     $('detMeta').innerHTML  = `${item.year?`<span class="det-yr">${item.year}</span>`:''}<span class="det-badge">${type==='movie'?'Película':'Serie'}</span>`;
     // Recomendaciones locales
     renderDetReco(null, type, id);
@@ -1559,7 +1585,11 @@ function playSeriesFirst(id){
   const season=s.seasons[0]; const ep=season?.episodes?.[0]; if(!ep) return;
   const url=(ep.qualities?.[0]?.url)||ep.url||'';
   const ttl=`${s.title} · S${season.season_number}E${ep.episode_number}: ${ep.title||'Episodio 1'}`;
+  S.currentSeries = id;
+  S.currentSIdx   = 0;
+  S.currentEIdx   = 0;
   openPlayer(url, ttl, ep.qualities||[], ep.subtitles||[], ep.audio||[], `ep_${id}_0_0`);
+  updEpNavBtns();
 }
 
 async function renderDetReco(td, type, currentId){
@@ -1618,6 +1648,63 @@ const Favs={
   has(id,type){ return !!this.get().find(x=>x.id==id&&x.type==type); },
   toggle(id,type){ this.has(id,type)?this.remove(id,type):this.add(id,type); }
 };
+
+/* ── History object ── */
+const Hist={
+  key:'cs_history',
+  get(){ try{return JSON.parse(localStorage.getItem(this.key)||'[]');}catch(e){return[];} },
+  add(id,type,title){
+    let h=this.get().filter(x=>!(x.id==id&&x.type==type)); // evitar duplicados
+    h.unshift({id,type,title,ts:Date.now()});               // más reciente primero
+    if(h.length>50) h=h.slice(0,50);                        // máx 50 entradas
+    localStorage.setItem(this.key,JSON.stringify(h));
+  },
+  clear(){ localStorage.removeItem(this.key); },
+  remove(id,type){ const h=this.get().filter(x=>!(x.id==id&&x.type==type)); localStorage.setItem(this.key,JSON.stringify(h)); }
+};
+
+async function renderHistory(){
+  const hist=Hist.get();
+  const area=$('contentArea');
+  if(!hist.length){
+    area.innerHTML=`<div class="c-section">
+      <div class="c-hdr">
+        <div class="c-hdr-lft"><span class="c-hdr-title">🕐 Historial</span></div>
+      </div>
+      <div class="empty"><div class="empty-ico">🕐</div><h3>Sin historial</h3><p>Las películas y series que reproduzcas aparecerán aquí</p></div>
+    </div>`;
+    return;
+  }
+  const movIds=hist.filter(h=>h.type==='movie').map(h=>h.id);
+  const serIds=hist.filter(h=>h.type==='series').map(h=>h.id);
+  const movItems=movIds.map(id=>S.movies.find(m=>m.id==id)).filter(Boolean);
+  const serItems=serIds.map(id=>S.series.find(s=>s.id==id)).filter(Boolean);
+
+  area.innerHTML=`<div class="c-section">
+    <div class="c-hdr">
+      <div class="c-hdr-lft"><span class="c-hdr-title">🕐 Historial</span><span class="c-count">${hist.length}</span></div>
+      <button onclick="clearHistory()" style="background:rgba(255,80,80,.12);border:1px solid rgba(255,80,80,.25);border-radius:8px;padding:4px 12px;color:#f87171;font-size:12px;font-family:Outfit,sans-serif;font-weight:700;cursor:pointer;">🗑 Limpiar</button>
+    </div>
+    ${movItems.length?`<div style="font-family:Outfit,sans-serif;font-size:13px;font-weight:700;color:var(--mute);margin-bottom:10px">Películas</div><div class="grid" id="hist-mov"></div>`:''}
+    ${serItems.length?`<div style="font-family:Outfit,sans-serif;font-size:13px;font-weight:700;color:var(--mute);margin-top:20px;margin-bottom:10px">Series</div><div class="grid" id="hist-ser"></div>`:''}
+  </div>`;
+  if(movItems.length) renderPosters('hist-mov', movItems, 'movie');
+  if(serItems.length) renderPosters('hist-ser', serItems, 'series');
+}
+
+function clearHistory(){
+  if(!confirm('¿Borrar todo el historial de reproducción?')) return;
+  Hist.clear();
+  renderHistory();
+  toast('🗑 Historial borrado');
+}
+
+function toggleSyn(){
+  const el=$('detSyn'); const btn=$('detSynMore');
+  if(!el||!btn) return;
+  const expanded = el.classList.toggle('expanded');
+  btn.textContent = expanded ? '▲ Leer menos' : '▼ Leer más';
+}
 
 function closeDetail(){
   const dtv=$('detTrailerVid'); if(dtv){dtv.pause();dtv.src='';}
@@ -1687,6 +1774,7 @@ async function loadSeasonEps(series, sIdx, td){
 ═══════════════════════════════════════ */
 function playMovie(id){
   const m = S.movies.find(x=>x.id==id); if(!m) return;
+  Hist.add(id, 'movie', m.title);
   const url = (m.qualities?.[0]?.url)||m.url||'';
   openPlayer(url, m.title, m.qualities||[], m.subtitles||[], m.audio||[], 'movie_'+id);
 }
@@ -1695,12 +1783,38 @@ function playEpisode(seriesId, sIdx, eIdx){
   const s = S.series.find(x=>x.id==seriesId); if(!s) return;
   const season = s.seasons[sIdx];
   const ep     = season?.episodes[eIdx]; if(!ep) return;
+  Hist.add(seriesId, 'series', s.title);
   const url    = (ep.qualities?.[0]?.url)||ep.url||'';
   const ttl    = `${s.title} · S${season.season_number}E${ep.episode_number}: ${ep.title||'Episodio'}`;
+  S.currentSeries = seriesId;
+  S.currentSIdx   = sIdx;
+  S.currentEIdx   = eIdx;
   openPlayer(url, ttl, ep.qualities||[], ep.subtitles||[], ep.audio||[], `ep_${seriesId}_${sIdx}_${eIdx}`);
+  updEpNavBtns();
 }
 
 function openPlayer(url, title, qualities, subtitles, audioTracks, saveKey){
+  if(!url){ toast('⚠ URL no configurada en el JSON'); return; }
+  const bestUrl = (qualities && qualities.length) ? (qualities[0].url || url) : url;
+
+  /* ── KODULAR WebView ── */
+  if(window.AppInventor){
+    window.AppInventor.setWebViewString('VLC:' + bestUrl);
+    toast('▶ Abriendo en VLC…');
+    return;
+  }
+
+  /* ── Chrome/Firefox en PC: protocolo vlc:// ── */
+  try {
+    window.location.href = 'vlc://' + bestUrl;
+    toast('▶ Abriendo en VLC… (acepta el permiso del navegador)');
+    return;
+  } catch(e) {
+    toast('⚠ No se pudo abrir VLC: ' + e.message);
+  }
+
+  /* ── Fallback reproductor interno ── */
+  S.prevItem = S.item ? {...S.item} : null;
   closeDetail();
   S.currentSaveKey = saveKey||null;
   show('L-player');
@@ -2246,11 +2360,18 @@ function closePlayer(){
   fr.src=''; fr.style.display='none';
   pl.classList.remove('drive-mode','drive-fill');
   Sub.stop();
-  disableSplitAudio();   // ← limpiar audio externo
+  disableSplitAudio();
   if(S.hls){ S.hls.destroy(); S.hls=null; }
   if(document.fullscreenElement) document.exitFullscreen();
   screen.orientation?.unlock?.();
   hide('L-player'); clearTimeout(S.ctrlTimer);
+  S.currentSeries = null;
+  // Volver a la sinopsis si se vino desde un detalle
+  if(S.prevItem){
+    const pi = S.prevItem;
+    S.prevItem = null;
+    openDetail(pi.id, pi.type);
+  }
 }
 
 /* ─ Controls ─ */
@@ -2428,7 +2549,12 @@ document.addEventListener('touchend',()=>{ dragging=false; });
   });
   v.addEventListener('canplay',()=>$('pSpin').classList.remove('on'));
 
-  v.addEventListener('ended',updPlayBtn);
+  v.addEventListener('ended',()=>{
+    updPlayBtn();
+    if(S.currentSeries){
+      setTimeout(()=>{ playNextEp(); }, 1200);
+    }
+  });
 
   // Click area
   pl.addEventListener('click',e=>{
@@ -2451,6 +2577,53 @@ document.addEventListener('touchend',()=>{ dragging=false; });
     if(e.key==='Escape'&&!document.fullscreenElement) closePlayer();
   });
 })();
+
+/* ═══════════════════════════════════════
+   NAVEGACIÓN DE EPISODIOS
+═══════════════════════════════════════ */
+function updEpNavBtns(){
+  const isSeries = !!S.currentSeries;
+  const prevBtn = $('epPrevBtn');
+  const nextBtn = $('epNextBtn');
+  if(!prevBtn || !nextBtn) return;
+  if(!isSeries){ prevBtn.style.display='none'; nextBtn.style.display='none'; return; }
+  prevBtn.style.display='flex';
+  nextBtn.style.display='flex';
+  const s = S.series.find(x=>x.id==S.currentSeries);
+  if(!s) return;
+  // Calcular si hay ep anterior / siguiente
+  const hasPrev = S.currentEIdx > 0 || S.currentSIdx > 0;
+  const season  = s.seasons[S.currentSIdx];
+  const hasNext = S.currentEIdx < (season?.episodes?.length||1)-1 || S.currentSIdx < s.seasons.length-1;
+  prevBtn.disabled = !hasPrev;
+  prevBtn.style.opacity = hasPrev ? '1' : '0.35';
+  nextBtn.disabled = !hasNext;
+  nextBtn.style.opacity = hasNext ? '1' : '0.35';
+}
+
+function playNextEp(){
+  if(!S.currentSeries) return;
+  const s = S.series.find(x=>x.id==S.currentSeries); if(!s) return;
+  const season = s.seasons[S.currentSIdx];
+  if(S.currentEIdx < (season?.episodes?.length||0)-1){
+    playEpisode(S.currentSeries, S.currentSIdx, S.currentEIdx+1);
+  } else if(S.currentSIdx < s.seasons.length-1){
+    playEpisode(S.currentSeries, S.currentSIdx+1, 0);
+  } else {
+    toast('✅ Has terminado todos los episodios');
+  }
+}
+
+function playPrevEp(){
+  if(!S.currentSeries) return;
+  if(S.currentEIdx > 0){
+    playEpisode(S.currentSeries, S.currentSIdx, S.currentEIdx-1);
+  } else if(S.currentSIdx > 0){
+    const s = S.series.find(x=>x.id==S.currentSeries); if(!s) return;
+    const prevSeason = s.seasons[S.currentSIdx-1];
+    playEpisode(S.currentSeries, S.currentSIdx-1, (prevSeason?.episodes?.length||1)-1);
+  }
+}
 
 function fmt(s){
   if(!s||isNaN(s)) return '0:00';
